@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { ExtensionUtils } from './utils/ExtensionUtils';
+import { ManifestXML } from './parser/ManifestXML';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -18,10 +19,9 @@ export function activate (context: vscode.ExtensionContext): void {
     const disposable = vscode.commands.registerCommand(
         'vscode-android-repo.helloWorld',
         () => {
-            void vscode.window
-                .showInformationMessage(
-                    'Hello World from vscode-android-repo!'
-                );
+            if (vscode.window.activeTextEditor != null) {
+                void ManifestXML.Parse(vscode.window.activeTextEditor.document);
+            }
         }
     );
 
