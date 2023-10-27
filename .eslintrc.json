@@ -1,24 +1,64 @@
 {
-    "root": true,
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "standard-with-typescript"
+    ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "ecmaVersion": 6,
-        "sourceType": "module"
+        "ecmaVersion": 12,
+        "sourceType": "module",
+        "project": "tsconfig.json"
     },
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "spellcheck"
     ],
     "rules": {
-        "@typescript-eslint/naming-convention": "warn",
-        "@typescript-eslint/semi": "warn",
-        "curly": "warn",
-        "eqeqeq": "warn",
-        "no-throw-literal": "warn",
-        "semi": "off"
-    },
-    "ignorePatterns": [
-        "out",
-        "dist",
-        "**/*.d.ts"
-    ]
+        "@typescript-eslint/semi": "off",
+        "@typescript-eslint/quotes": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/member-delimiter-style": "off",
+        "@typescript-eslint/indent": ["error", 4],
+        "max-len": ["error", 80],
+        "no-void": "off",
+        "complexity": [
+            "warn",
+            20
+        ],
+        "semi": [
+            2,
+            "always"
+        ],
+        "spellcheck/spell-checker": [
+            "error",
+            {
+                "comments": false,
+                "strings": true,
+                "identifiers": false,
+                "templates": false,
+                "lang": "en_US",
+                "skipWords": [
+                    "Torizon",
+                    "torizon",
+                    "git",
+                    "ApolloX",
+                    "binfmt",
+                    "wsl",
+                    "nmap",
+                    "avahi",
+                    "iputils",
+                    "utf8",
+                    "Toradex",
+                    "workspace",
+                    "yml",
+                    "vscode",
+                    "Dockerfile"
+                ],
+                "minLength": 8
+            }
+        ]
+    }
 }
