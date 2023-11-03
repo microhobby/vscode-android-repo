@@ -1,15 +1,18 @@
-import type * as vscode from 'vscode';
+import * as vscode from 'vscode';
 import * as jsdom from 'jsdom';
 import { type Token } from 'parse5';
 import { Include } from './Include';
 import { Remote } from './Remote';
 import { Project } from './Project';
+import { ExtensionUtils } from '../utils/ExtensionUtils';
+import { type IAttr } from './IAttr';
 
 export class ManifestXML {
     private readonly _mainFile: jsdom.JSDOM;
     private readonly _includes: Include[] = [];
     private readonly _remotes: Remote[] = [];
     private readonly _projects: Project[] = [];
+    private _parsedManifests: IAttr[] = [];
 
     get mainFile (): jsdom.JSDOM {
         return this._mainFile;
@@ -146,15 +149,38 @@ export class ManifestXML {
         return undefined;
     };
 
+    private async _parseWorkSpace (): Promise<void> {
+        this._parsedManifests = [];
+
+        ExtensionUtils.showStatusBarLoading("Parsing Manifests...");
+
+        // first of all parse the workspace
+        const xmlFiles = await vscode.workspace.findFiles('**/*.xml');
+        for (const xmlFile of xmlFiles) {
+            this._parsedManifests.push(await ManifestXML.Parse(
+                await vscode.workspace.openTextDocument(xmlFile)
+            ) as unknown as IAttr);
+        }
+
+        ExtensionUtils.hideStatusBarLoading();
+        ExtensionUtils.showStatusBarOk("Manifests OK");
+    }
+
+    get workSpaceManifests (): IAttr[] {
+        return this._parsedManifests;
+    }
+
     constructor (
-        mainDOM: jsdom.JSDOM,
-        includes: Include[],
-        remotes: Remote[],
-        projects: Project[]
+        mainDOM?: jsdom.JSDOM,
+        includes?: Include[],
+        remotes?: Remote[],
+        projects?: Project[]
     ) {
-        this._mainFile = mainDOM;
-        this._includes = includes;
-        this._remotes = remotes;
-        this._projects = projects;
+        this._mainFile = mainDOM ?? new jsdom.JSDOM('');
+        this._includes = includes ?? [];
+        this._remotes = remotes ?? [];
+        this._projects = projects ?? [];
+
+        void this._parseWorkSpace();
     }
 }
