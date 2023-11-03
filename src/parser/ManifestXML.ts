@@ -5,17 +5,22 @@ import { Include } from './Include';
 import { Remote } from './Remote';
 import { Project } from './Project';
 import { ExtensionUtils } from '../utils/ExtensionUtils';
-import { type IAttr } from './IAttr';
+import { type PathLike } from 'fs';
 
 export class ManifestXML {
-    private readonly _mainFile: jsdom.JSDOM;
+    private readonly _file: PathLike;
+    private readonly _xmlDOM: jsdom.JSDOM;
     private readonly _includes: Include[] = [];
     private readonly _remotes: Remote[] = [];
     private readonly _projects: Project[] = [];
-    private _parsedManifests: IAttr[] = [];
+    private _parsedManifests: ManifestXML[] = [];
 
-    get mainFile (): jsdom.JSDOM {
-        return this._mainFile;
+    get file (): PathLike {
+        return this._file;
+    }
+
+    get xmlDOM (): jsdom.JSDOM {
+        return this._xmlDOM;
     }
 
     get includes (): Include[] {
@@ -139,6 +144,7 @@ export class ManifestXML {
 
             // the OBJECT
             return new ManifestXML(
+                xmlDoc.fileName,
                 xmlDOM,
                 includes,
                 remotes,
@@ -159,28 +165,39 @@ export class ManifestXML {
         for (const xmlFile of xmlFiles) {
             this._parsedManifests.push(await ManifestXML.Parse(
                 await vscode.workspace.openTextDocument(xmlFile)
-            ) as unknown as IAttr);
+            ) as unknown as ManifestXML);
         }
 
         ExtensionUtils.hideStatusBarLoading();
         ExtensionUtils.showStatusBarOk("Manifests OK");
     }
 
-    get workSpaceManifests (): IAttr[] {
+    get workSpaceManifests (): ManifestXML[] {
         return this._parsedManifests;
     }
 
     constructor (
+        file?: PathLike,
         mainDOM?: jsdom.JSDOM,
         includes?: Include[],
         remotes?: Remote[],
         projects?: Project[]
     ) {
-        this._mainFile = mainDOM ?? new jsdom.JSDOM('');
+        // only the main overload need to parse it
+        if (
+            file === undefined &&
+            mainDOM === undefined &&
+            includes === undefined &&
+            remotes === undefined &&
+            projects === undefined
+        ) {
+            void this._parseWorkSpace();
+        }
+
+        this._file = file ?? '';
+        this._xmlDOM = mainDOM ?? new jsdom.JSDOM('');
         this._includes = includes ?? [];
         this._remotes = remotes ?? [];
         this._projects = projects ?? [];
-
-        void this._parseWorkSpace();
     }
 }
