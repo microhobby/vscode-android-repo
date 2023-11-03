@@ -1,29 +1,17 @@
-export class Project {
-    private readonly _name: string;
-    private readonly _path: string;
-    private readonly _remote: string;
-    private readonly _revision: string;
+import { Attr } from "./IAttr";
 
-    get name (): string {
-        return this._name;
-    }
-
-    get path (): string {
-        return this._path;
-    }
-
-    get remote (): string {
-        return this._remote;
-    }
-
-    get revision (): string {
-        return this._revision;
-    }
+export class Project extends Attr {
+    name: Attr = new Attr();
+    path: Attr = new Attr();
+    remote: Attr = new Attr();
+    revision: Attr = new Attr();
 
     constructor (name: string, path: string, remote: string, revision: string) {
-        this._name = name;
-        this._path = path;
-        this._remote = remote;
-        this._revision = revision;
+        super();
+
+        this.name.value = name;
+        this.path.value = path;
+        this.remote.value = remote;
+        this.revision.value = revision;
     }
 }

@@ -1,11 +1,5 @@
-export class Include {
-    private _name: string = "";
+import { Attr } from "./IAttr";
 
-    get name (): string {
-        return this._name;
-    }
-
-    set name (value: string) {
-        this._name = value;
-    }
+export class Include extends Attr {
+    name: Attr = new Attr();
 }

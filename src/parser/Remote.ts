@@ -1,23 +1,15 @@
-export class Remote {
-    private readonly _alias: string = "";
-    private readonly _fetch: string = "";
-    private readonly _name: string = "";
+import { Attr } from "./IAttr";
 
-    get alias (): string {
-        return this._alias;
-    }
-
-    get fetch (): string {
-        return this._fetch;
-    }
-
-    get name (): string {
-        return this._name;
-    }
+export class Remote extends Attr {
+    alias: Attr = new Attr();
+    fetch: Attr = new Attr();
+    name: Attr = new Attr();
 
     constructor (alias: string, fetch: string, name: string) {
-        this._alias = alias;
-        this._fetch = fetch;
-        this._name = name;
+        super();
+
+        this.alias.value = alias;
+        this.fetch.value = fetch;
+        this.name.value = name;
     }
 }
