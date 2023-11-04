@@ -1,9 +1,8 @@
 # Change Log
 
-All notable changes to the "vscode-android-repo" extension will be documented in this file.
+## [v0.0.1] 11-03-2023
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-- Initial release
+- Initial release;
+- Goto Include Manifest File;
+- Goto Remote Definition;
+- Parsing manifest file progress on status bar;

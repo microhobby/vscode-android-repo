@@ -1,11 +1,15 @@
 {
     "name": "vscode-android-repo",
     "publisher": "microhobby",
+    "icon": "assets/img/logo.png",
     "author": {
         "name": "Matheus Castello",
         "email": "matheus@castello.eng.br"
     },
-    "displayName": "Repo Manifest",
+    "repository": {
+        "url": ""
+    },
+    "displayName": "Repo Tool Manifest",
     "description": "Extension to help with Repo Manifest workspaces",
     "version": "0.0.1",
     "engines": {
@@ -31,7 +35,8 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "lint": "eslint src --ext ts"
+        "lint": "eslint src --ext ts",
+        "pack": "vsce package"
     },
     "devDependencies": {
         "@types/vscode": "^1.83.0",
