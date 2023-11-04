@@ -1,17 +1,17 @@
 {
     "name": "vscode-android-repo",
     "publisher": "microhobby",
-    "icon": "assets/img/logo.png",
+    "icon": "assets/img/logoUp.png",
     "author": {
         "name": "Matheus Castello",
         "email": "matheus@castello.eng.br"
     },
     "repository": {
-        "url": ""
+        "url": "https://github.com/microhobby/vscode-android-repo"
     },
     "displayName": "Repo Tool Manifest",
     "description": "Extension to help with Repo Manifest workspaces",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "engines": {
         "vscode": "^1.83.0"
     },
