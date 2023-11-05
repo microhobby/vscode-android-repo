@@ -6,6 +6,7 @@ import { ManifestXML } from './parser/ManifestXML';
 import {
     ManifestDefinitionProvider
 } from './providers/ManifestDefinitionProvider';
+import { ManifestHoverProvider } from './providers/ManifestHoverProvider';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -20,8 +21,13 @@ export async function activate (
         mainManifestXML
     );
 
+    const manifestHoverProvider = new ManifestHoverProvider(
+        mainManifestXML
+    );
+
     context.subscriptions.push(
-        ...manifestDefinitionProvider.regDisposables
+        ...manifestDefinitionProvider.regDisposables,
+        ...manifestHoverProvider.regDisposables
     );
 }
 
