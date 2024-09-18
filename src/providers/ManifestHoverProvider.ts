@@ -19,6 +19,7 @@ export class ManifestHoverProvider implements
         this._manifestXML = manifestXML;
     }
 
+    // eslint-disable-next-line complexity
     provideHover (
         document: vscode.TextDocument,
         position: vscode.Position,
@@ -121,14 +122,29 @@ export class ManifestHoverProvider implements
                             const hoverMsg = new vscode.MarkdownString();
                             hoverMsg.supportHtml = true;
                             hoverMsg.appendMarkdown(`Repo: `);
-                            // eslint-disable-next-line max-len
-                            hoverMsg.appendMarkdown(`[${remoteTag?.fetch.value}/${attr.value}](${remoteTag?.fetch.value}/${attr.value})`);
+
+                            if (
+                                remoteTag?.fetch
+                                    .value?.includes("github.com") === true
+                            ) {
+                                // eslint-disable-next-line max-len
+                                hoverMsg.appendMarkdown(`[${remoteTag?.fetch.value}/${attr.value}](${remoteTag?.fetch.value}/${attr.value})`);
+                            } else {
+                                // let's try cgit
+                                // eslint-disable-next-line max-len
+                                hoverMsg.appendMarkdown(`[${remoteTag?.fetch.value}/cgit/${attr.value}/?id=${attr.value}](${remoteTag?.fetch.value}/cgit/${attr.value}/?id=${attr.value})`);
+                            }
+
                             hoverMsg.appendText("\n");
-                            // eslint-disable-next-line max-len
-                            // console.log(`https://opengraph.githubassets.com/${hash.digest('hex')}/${fetchUser}/${attr.value}`);
-                            // eslint-disable-next-line max-len
-                            hoverMsg.appendMarkdown(`<img width="500" src="https://opengraph.githubassets.com/${hash.digest('hex')}/${fetchUser}/${attr.value}" />`);
-                            hoverMsg.appendText("\n");
+
+                            if (
+                                remoteTag?.fetch
+                                    .value?.includes("github.com") === true
+                            ) {
+                                // eslint-disable-next-line max-len
+                                hoverMsg.appendMarkdown(`<img width="500" src="https://opengraph.githubassets.com/${hash.digest('hex')}/${fetchUser}/${attr.value}" />`);
+                                hoverMsg.appendText("\n");
+                            }
 
                             const remoteHover = new vscode.Hover(
                                 hoverMsg,
@@ -136,6 +152,70 @@ export class ManifestHoverProvider implements
                             );
 
                             return remoteHover;
+                        }
+
+                        break;
+                    case 'revision':
+                        // create a hover with the link for the commit page
+                        const commitHash = projectTag.getAttribute("revision");
+                        const _remoteName = projectTag.getAttribute("remote");
+                        const repoName = projectTag.getAttribute("name");
+                        const remoteTag = this._manifestXML
+                            .workSpaceManifests.find(
+                                obj => obj.remotes.find(
+                                    rem => rem.name.value === _remoteName
+                                )
+                            );
+                        const repoOriginTag = remoteTag?.remotes.find(
+                            obj => obj.name.value === _remoteName
+                        );
+
+                        if (repoOriginTag != null) {
+                            const _fetchOrigin = repoOriginTag.fetch.value;
+                            const remoteFetchURLSlices =
+                                repoOriginTag.fetch.value?.split("/");
+                            if (remoteFetchURLSlices == null) {
+                                break;
+                            }
+                            const fetchUser = remoteFetchURLSlices[
+                                remoteFetchURLSlices.length - 1
+                            ];
+
+                            const hoverMsg = new vscode.MarkdownString();
+                            hoverMsg.supportHtml = true;
+                            hoverMsg.appendMarkdown(`Commit: `);
+
+                            if (_fetchOrigin?.includes("github.com") === true) {
+                                hoverMsg.appendMarkdown(
+                                    // eslint-disable-next-line max-len
+                                    `[${commitHash}](${_fetchOrigin}/${repoName}/commit/${commitHash})`
+                                );
+                            } else {
+                                // let's try cgit
+                                hoverMsg.appendMarkdown(
+                                    // eslint-disable-next-line max-len
+                                    `[${commitHash}](${_fetchOrigin}/cgit/${repoName}/commit/?id=${commitHash})`
+                                );
+                            }
+                            hoverMsg.appendText("\n");
+
+                            if (_fetchOrigin?.includes("github.com") === true) {
+                                const date = new Date();
+                                const hash = crypto.createHash('sha256');
+                                hash.update(date.toISOString());
+                                hoverMsg.appendMarkdown(
+                                    // eslint-disable-next-line max-len
+                                    `<img width="500" src="https://opengraph.githubassets.com/${hash.digest('hex')}/${fetchUser}/${repoName}/commit/${commitHash}" />`
+                                );
+                                hoverMsg.appendText("\n");
+                            }
+
+                            const commitHover = new vscode.Hover(
+                                hoverMsg,
+                                rangeAttr
+                            );
+
+                            return commitHover;
                         }
 
                         break;
